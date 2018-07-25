@@ -116,41 +116,49 @@ int main(int argc,char** argv)
   hal::Everloop everloop;
   everloop.Setup(&bus);
 
-  hal::EverloopImage image1d;
+  //hal::EverloopImage image1d;
 
-  std::valarray<int> lookup = {23, 27, 32, 1, 6, 10, 14, 19};
+  //std::valarray<int> lookup = {23, 27, 32, 1, 6, 10, 14, 19};
 
   std::valarray<float> magnitude(mics.Channels());
 
   STFT *engine = new STFT(FFT_SIZE, NFRAMES, CHANNELS);
-  SRPPHAT *srpphat = new SRPPHAT(engine, CONFIG_FILE, SRP_K_MIN, SRP_K_LEN, SRP_N_GRID, SRP_NFRAMES, float(FS), C, SRP_DIM);
+  //SRPPHAT *srpphat = new SRPPHAT(engine, CONFIG_FILE, SRP_K_MIN, SRP_K_LEN, SRP_N_GRID, SRP_NFRAMES, float(FS), C, SRP_DIM);
 
   float *buf_ptr;
-  e3e_complex *fd_ptr;
-  int argmax = 0;
+  //e3e_complex *fd_ptr;
+  //int argmax = 0;
 
   assert(mics.NumberOfSamples() == FFT_SIZE);
-  assert(SRP_N_GRID == 35);
+  //assert(SRP_N_GRID == 35);
 
   while (true) 
   {
 
     mics.Read();
     magnitude = 0.0;
-    bool trgDetected=false;
+    //bool trgDetected=false;
 
     buf_ptr = engine->get_in_buffer();
-
+	
+	// STFT
     for (unsigned int s = 0; s < mics.NumberOfSamples(); s++) 
       for (int ch = 0 ; ch < CHANNELS ; ch++)
         buf_ptr[s*CHANNELS + ch] = mics.At(s, ch);
 
     fd_ptr = engine->transform();
-
-    argmax = srpphat->process();
-
-    update_LED(srpphat->spatial_spectrum, &image1d);
-    everloop.Write(&image1d);
+	
+	// Perform processing such as SRP-PHAT, FRIDA...
+    //argmax = srpphat->process();
+	
+	// ISTFT
+    for (unsigned int s = 0; s < mics.NumberOfSamples(); s++) 
+      for (int ch = 0 ; ch < CHANNELS ; ch++)
+			// ISTFT
+			// Send audio samples to output codec interface
+		  
+    //update_LED(srpphat->spatial_spectrum, &image1d);
+    //everloop.Write(&image1d);
 
     //std::cout << srpphat->grid[argmax][0] / M_PI * 180. << std::endl;
     //std::cout << srpphat->spatial_spectrum[argmax] << std::endl;
